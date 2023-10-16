@@ -304,6 +304,8 @@ data_lense! { CookieReply :=
     dummy: 4
 }
 
+// FIXME: Add the new message type
+
 // Traits /////////////////////////////////////////////////////////////////////
 
 pub trait WireMsg: std::fmt::Debug {
@@ -332,6 +334,7 @@ pub enum MsgType {
     EmptyData = 0x84,
     DataMsg = 0x85,
     CookieReply = 0x86,
+    // FIXME: Add the new message type
 }
 
 impl TryFrom<u8> for MsgType {
@@ -345,6 +348,7 @@ impl TryFrom<u8> for MsgType {
             0x84 => MsgType::EmptyData,
             0x85 => MsgType::DataMsg,
             0x86 => MsgType::CookieReply,
+            // FIXME: Add the new message type
             _ => return Err(RosenpassError::InvalidMessageType(value)),
         })
     }

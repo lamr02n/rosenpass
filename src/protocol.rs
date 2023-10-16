@@ -736,6 +736,7 @@ impl CryptoServer {
     // TODO remove unnecessary copying between global tx_buf and per-peer buf
     // TODO move retransmission storage to io server
     pub fn initiate_handshake(&mut self, peer: PeerPtr, tx_buf: &mut [u8]) -> Result<usize> {
+        // FIXME: Add the implementation for the new message
         let mut msg = tx_buf.envelope::<InitHello<()>>()?; // Envelope::<InitHello>::default(); // TODO
         self.handle_initiation(peer, msg.payload_mut().init_hello()?)?;
         let len = self.seal_and_commit_msg(peer, MsgType::InitHello, msg)?;
@@ -840,6 +841,7 @@ impl CryptoServer {
             Err(_) => {
                 bail!("CookieReply handling not implemented!")
             }
+            // FIXME: Add implementation for handling the message
         };
 
         Ok(HandleMsgResult {
