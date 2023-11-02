@@ -305,6 +305,14 @@ data_lense! { CookieReply :=
 }
 
 // FIXME: Add the new message type
+data_lense! { Version :=
+    /// Protocol UUID
+    uuid: 16,
+    /// Protocol version number (64 bit)
+    version_number: 8,
+    /// Variable length text, currently unused
+    text: VAR_TEXT_LEN
+}
 
 // Traits /////////////////////////////////////////////////////////////////////
 
@@ -324,6 +332,9 @@ pub const WIRE_ENVELOPE_LEN: usize = 1 + 3 + 16 + 16; // TODO verify this
 /// Size required to fit any message in binary form
 pub const MAX_MESSAGE_LEN: usize = 2500; // TODO fix this
 
+// FIXME: Add length of version variable length text
+pub const VAR_TEXT_LEN: usize = 20; // TODO: change size
+
 /// Recognized message types
 #[repr(u8)]
 #[derive(Hash, PartialEq, Eq, PartialOrd, Ord, Debug, Clone, Copy)]
@@ -335,6 +346,7 @@ pub enum MsgType {
     DataMsg = 0x85,
     CookieReply = 0x86,
     // FIXME: Add the new message type
+    Version = 0x87,
 }
 
 impl TryFrom<u8> for MsgType {
@@ -349,6 +361,7 @@ impl TryFrom<u8> for MsgType {
             0x85 => MsgType::DataMsg,
             0x86 => MsgType::CookieReply,
             // FIXME: Add the new message type
+            0x87 => MsgType::Version,
             _ => return Err(RosenpassError::InvalidMessageType(value)),
         })
     }

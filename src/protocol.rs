@@ -737,12 +737,15 @@ impl CryptoServer {
     // TODO move retransmission storage to io server
     pub fn initiate_handshake(&mut self, peer: PeerPtr, tx_buf: &mut [u8]) -> Result<usize> {
         // FIXME: Add the implementation for the new message
+        let version_msg = tx_buf.envelope::<Version<()>>()?;
+        let version_len = self.seal_and_commit_msg(peer, MsgType::Version, version_msg)?;
+
         let mut msg = tx_buf.envelope::<InitHello<()>>()?; // Envelope::<InitHello>::default(); // TODO
         self.handle_initiation(peer, msg.payload_mut().init_hello()?)?;
         let len = self.seal_and_commit_msg(peer, MsgType::InitHello, msg)?;
         peer.hs()
-            .store_msg_for_retransmission(self, &tx_buf[..len])?;
-        Ok(len)
+            .store_msg_for_retransmission(self, &tx_buf[..version_len+len])?;
+        Ok(version_len+len)
     }
 }
 
@@ -842,6 +845,9 @@ impl CryptoServer {
                 bail!("CookieReply handling not implemented!")
             }
             // FIXME: Add implementation for handling the message
+            Ok(MsgType::Version) => {
+                bail!("Version package received!")
+            }
         };
 
         Ok(HandleMsgResult {
